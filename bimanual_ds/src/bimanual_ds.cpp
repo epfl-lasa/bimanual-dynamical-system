@@ -326,6 +326,7 @@ void bimanual_ds::Update()
 	Vector Dummy(6);Dummy.Zero();
 	Dummy(3)=S_O_(3);Dummy(4)=S_O_(4);Dummy(5)=S_O_(5);
 
+    // Eq. 9a
 	DS_VO_=(A_1_*(S_VO_-S_O_*Gamma_)+DS_O_*Gamma_+S_O_*DGamma_+U_l_+U_r_)/3;
 
 //	DS_VO_=(A_1_*(S_VO_-S_O_*Gamma_)+DS_O_*Gamma_+S_O_*DGamma_+Dummy*DGamma_);
@@ -338,7 +339,8 @@ void bimanual_ds::Update()
 	{
 		O_U_VO_=O_U_O_*Gamma_O_+O_U_VO_*(1-Gamma_O_);
 	}
-	S_VO_=S_VO_+DS_VO_*dt_;
+
+    S_VO_ = S_VO_ + DS_VO_*dt_;
 
 /*	Pos_Debug.position.x=U_l_(0);
 	Pos_Debug.position.y=U_l_(1);
