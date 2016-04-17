@@ -374,24 +374,24 @@ void bimanual_ds::Update()
 
 
 
-	if ((P_R_U_L_(2)<0.1)||(P_R_U_R_(2)<0.2))
-	{
-		if (Command!=Com_Stop)
-		{
-			FLag_of_command=0;
-		}
-		Command=Com_Stop;
-		if (FLag_of_command==0)
-		{
-			cout<<"The robot is immediately stopped"<<endl;
-			FLag_of_command=1;
-		}
-	}
+//	if ((P_R_U_L_(2)<0.1)||(P_R_U_R_(2)<0.2))
+//	{
+//		if (Command!=Com_Stop)
+//		{
+//			FLag_of_command=0;
+//		}
+//		Command=Com_Stop;
+//		if (FLag_of_command==0)
+//		{
+//			cout<<"The robot is immediately stopped"<<endl;
+//			FLag_of_command=1;
+//		}
+//	}
 	Frame_transform_C_T_U();
 	//	cout<<"Norm2() "<<(P_O_-P_VO_).Norm2()+(P_R_L_-P_O_C_L_).Norm2()+(P_R_R_-P_O_C_R_).Norm2()<<endl;
 //	if ((((P_O_-P_VO_).Norm2()+(P_R_L_-P_O_C_L_).Norm2()+(P_R_R_-P_O_C_R_).Norm2()<0.01))||P_VO_(0)>0.3)
-	if ((((P_O_-P_VO_).Norm2()+(P_R_L_-P_O_C_L_).Norm2()+(P_R_R_-P_O_C_R_).Norm2()<0.001)))
-	{
+//	if ((((P_O_-P_VO_).Norm2()+(P_R_L_-P_O_C_L_).Norm2()+(P_R_R_-P_O_C_R_).Norm2()<0.001)))
+//	{
 	/*	if (Command!=Com_Break)
 		{
 			FLag_of_command=0;
@@ -402,9 +402,10 @@ void bimanual_ds::Update()
 			cout<<"The robot's speed is reduced"<<endl;
 			FLag_of_command=1;
 		}*/
-	}
+//	}
 	//	Gamma_O_=1.0;
-	if  (P_U_O_(0)>-0.5)
+
+    if  (P_U_O_(0)>-0.5)
 	{
 		Gamma_O_=1.0;
 		State_Orie=Per_Follow;

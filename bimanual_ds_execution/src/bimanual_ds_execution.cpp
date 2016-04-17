@@ -157,16 +157,31 @@ void bimanual_ds_execution::getVirtualObjectPose(tf::Pose& vo_pose){
 }
 
 void bimanual_ds_execution::update(){
+    
+    // Update Object State and Intercept Positions
+    vo_DS->Set_object_Orien(ROri_object,ROri_Intercept);
+    vo_DS->Set_object_state(RPos_object, DRPos_object, DDRPos_object, RPos_Intercept, RPos_Intercept_left, RPos_Intercept_right);
+
+    // Update Dynamical System Controller
+    vo_DS->Update();
+
+    // Get desired end-effector poses
+    vo_DS->Get_Left_robot_state(PosDesired_End_left,DPosDesired_End_left,DDPosDesired_End_left);
+    vo_DS->Get_Right_robot_state(PosDesired_End_right,DPosDesired_End_right,DDPosDesired_End_right);    
+
+    // Set next states x_dot, x_ddot
+    DRPos_End_left=DPosDesired_End_left;
+    DDRPos_End_left=DDPosDesired_End_left;
+    DRPos_End_right=DPosDesired_End_right;
+    DDRPos_End_right=DDPosDesired_End_right;
 
 }
 
 void bimanual_ds_execution::getNextEEStates(tf::Pose &left_ee, tf::Pose &right_ee){
 
-     vo_DS->Get_Left_robot_state(PosDesired_End_left,DPosDesired_End_left,DDPosDesired_End_left);
-     vo_DS->Get_Right_robot_state(PosDesired_End_right,DPosDesired_End_right,DDPosDesired_End_right);
-
-     left_ee.setOrigin(tf::Vector3(PosDesired_End_left[0],PosDesired_End_left[1],PosDesired_End_left[2]));
-     right_ee.setOrigin(tf::Vector3(PosDesired_End_right[0],PosDesired_End_right[1],PosDesired_End_right[2]));
+    // Convert Pose Types
+    left_ee.setOrigin(tf::Vector3(PosDesired_End_left[0],PosDesired_End_left[1],PosDesired_End_left[2]));
+    right_ee.setOrigin(tf::Vector3(PosDesired_End_right[0],PosDesired_End_right[1],PosDesired_End_right[2]));
 
 }
 
