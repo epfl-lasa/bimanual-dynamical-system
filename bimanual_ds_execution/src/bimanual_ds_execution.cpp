@@ -79,15 +79,7 @@ void bimanual_ds_execution::init(double dt, double Gamma, double DGamma, double 
 
     vo_DS = new bimanual_ds();
     // Initialize ds motion parameters
-    vo_DS->initialize(dt, Gamma, DGamma, Gain_A, Gain_K_l, Gain_K_r);
-
-}
-
-void bimanual_ds_execution::setInitialEEStates(const tf::Pose& left_ee, const tf::Pose& right_ee){
-
-    // Convert Pose Types
-    tfPosToVector (left_ee.getOrigin(), RPos_End_left);
-    tfPosToVector (right_ee.getOrigin(), RPos_End_right);
+    vo_DS->initialize(dt, Gamma, DGamma, Gain_A, Gain_K_l, Gain_K_r);    
 
     // Initialize left ee states to 0
     DRPos_End_left.Zero();
@@ -97,6 +89,15 @@ void bimanual_ds_execution::setInitialEEStates(const tf::Pose& left_ee, const tf
     DRPos_End_right.Zero();
     DDRPos_End_right.Zero();
 
+}
+
+void bimanual_ds_execution::setCurrentEEStates(const tf::Pose& left_ee, const tf::Pose& right_ee){
+
+    // Convert Pose Types
+    tfPosToVector (left_ee.getOrigin(), RPos_End_left);
+    tfPosToVector (right_ee.getOrigin(), RPos_End_right);
+
+    // Set Current Object States
     vo_DS->Set_Left_robot_state(RPos_End_left, DRPos_End_left, DDRPos_End_left);
     vo_DS->Set_Right_robot_state(RPos_End_right, DRPos_End_right, DDRPos_End_right);
 
@@ -104,7 +105,7 @@ void bimanual_ds_execution::setInitialEEStates(const tf::Pose& left_ee, const tf
 
 void bimanual_ds_execution::setCurrentObjectPose(const tf::Pose& object_pose)
 {
-
+        // Convert Pose Types
         tfPosToVector (object_pose.getOrigin(),   RPos_object);
         tfQuatToVector(object_pose.getRotation(), ROri_object);
 
@@ -152,6 +153,20 @@ void bimanual_ds_execution::getVirtualObjectPose(tf::Pose& vo_pose){
     Vector q = vo_DS->Get_virtual_object_orie();
     vo_pose.setOrigin(tf::Vector3(p[0],p[1],p[2]));
     vo_pose.setRotation(tf::Quaternion(q[1],q[2],q[3],q[0]));
+
+}
+
+void bimanual_ds_execution::update(){
+
+}
+
+void bimanual_ds_execution::getNextEEStates(tf::Pose &left_ee, tf::Pose &right_ee){
+
+     vo_DS->Get_Left_robot_state(PosDesired_End_left,DPosDesired_End_left,DDPosDesired_End_left);
+     vo_DS->Get_Right_robot_state(PosDesired_End_right,DPosDesired_End_right,DDPosDesired_End_right);
+
+     left_ee.setOrigin(tf::Vector3(PosDesired_End_left[0],PosDesired_End_left[1],PosDesired_End_left[2]));
+     right_ee.setOrigin(tf::Vector3(PosDesired_End_right[0],PosDesired_End_right[1],PosDesired_End_right[2]));
 
 }
 

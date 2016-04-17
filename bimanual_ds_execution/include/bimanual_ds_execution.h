@@ -34,10 +34,11 @@ public:
     ~bimanual_ds_execution();
 
     void init(double dt, double Gamma, double DGamma, double Gain_A, double Gain_K_l, double Gain_K_r);
+    void update();
 
     // EE functions
-    void setInitialEEStates(const tf::Pose& left_ee, const tf::Pose& right_ee);
-    void setCurrentEEStates();
+    void setCurrentEEStates(const tf::Pose& left_ee, const tf::Pose& right_ee);
+    void getNextEEStates(tf::Pose& left_ee, tf::Pose& right_ee);
 
     // Real Object functions
     void setCurrentObjectPose(const tf::Pose& object_pose);
@@ -83,8 +84,8 @@ private:
     Vector						RPos_Intercept_left;      // Intercept position of left ee in right robot's RF
     Vector						RPos_Intercept_right;     // Intercept position of right ee in right robot's RF
     Vector 						Position_VO;              // Position of Virtual Object
-    Vector						ROri_Intercept;           // Orientation of VO at intercept
     Vector 						RPos_Intercept;           // Position of VO at intercept
+    Vector						ROri_Intercept;           // Orientation of VO at intercept
 
     // Real Object State Variables
     Vector 						RPos_object;              // Position of Real Object in Right robot's RF
