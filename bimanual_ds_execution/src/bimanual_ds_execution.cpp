@@ -19,9 +19,6 @@
 
 bimanual_ds_execution::bimanual_ds_execution()
 {
-    // Initialize all parameters/variables
-    gTimeToReach=0.0;
-
 
     // (Robot) Left EE State Variables
     RPos_End_left.Resize(3);            // Position of left ee in Right robot's RF
@@ -48,6 +45,7 @@ bimanual_ds_execution::bimanual_ds_execution()
     // Virtual Object State Variables
     RPos_Intercept_left.Resize(3);      // Intercept position of left ee in right robot's RF
     RPos_Intercept_right.Resize(3);     // Intercept position of right ee in right robot's RF
+
     Position_VO.Resize(3);              // Position of Virtual Object
     ROri_Intercept.Resize(4);           // Orientation of VO at intercept
     RPos_Intercept.Resize(3);           // Position of VO at intercept
@@ -64,9 +62,15 @@ bimanual_ds_execution::bimanual_ds_execution()
     DDRPos_object.Zero();
     DDRPos_object(2)=-0.5;
 
+    // Orientation Dynamics
+    filter_ang_vel.Resize(4);
+    desired_ang_vel.Resize(4);
+    filter_ang_vel.Zero();
+    desired_ang_vel.Zero();
+
     // Some default values
     dt = 0.002;
-    reachingThr=0.005;
+    slerp_t = 0.45;
 
 }
 
@@ -89,6 +93,11 @@ void bimanual_ds_execution::init(double dt, double Gamma, double DGamma, double 
     DRPos_End_right.Zero();
     DDRPos_End_right.Zero();
 
+    // Initialize angular cddynamics
+     angular_cddynamics = new CDDynamics(4,0.01,1);
+     angular_cddynamics->SetState(filter_ang_vel);
+     angular_cddynamics->SetDt(1.0/dt);
+
 }
 
 void bimanual_ds_execution::setCurrentEEStates(const tf::Pose& left_ee, const tf::Pose& right_ee){
@@ -97,9 +106,21 @@ void bimanual_ds_execution::setCurrentEEStates(const tf::Pose& left_ee, const tf
     tfPosToVector (left_ee.getOrigin(), RPos_End_left);
     tfPosToVector (right_ee.getOrigin(), RPos_End_right);
 
-    // Set Current Object States
+    // Set Current EE States
     vo_DS->Set_Left_robot_state(RPos_End_left, DRPos_End_left, DDRPos_End_left);
     vo_DS->Set_Right_robot_state(RPos_End_right, DRPos_End_right, DDRPos_End_right);
+
+    // Set Current EE Orientations
+    ROri_End_left.setX(left_ee.getRotation().getX());
+    ROri_End_left.setY(left_ee.getRotation().getY());
+    ROri_End_left.setZ(left_ee.getRotation().getZ());
+    ROri_End_left.setW(left_ee.getRotation().getW());
+
+    ROri_End_right.setX(right_ee.getRotation().getX());
+    ROri_End_right.setY(right_ee.getRotation().getY());
+    ROri_End_right.setZ(right_ee.getRotation().getZ());
+    ROri_End_right.setW(right_ee.getRotation().getW());
+
 
 }
 
@@ -131,9 +152,16 @@ void bimanual_ds_execution::setCurrentObjectState(const tf::Pose& object_pose, c
 
 void bimanual_ds_execution::setInterceptPositions(const tf::Pose& object_intercept, const tf::Pose& left_intercept, const tf::Pose& right_intercept){
 
+    // Object Intercept Position
     tfPosToVector (object_intercept.getOrigin(), RPos_Intercept);
+
+    // Left and Right Intercept Positions
     tfPosToVector (left_intercept.getOrigin()  , RPos_Intercept_left);
     tfPosToVector (right_intercept.getOrigin() , RPos_Intercept_right);
+
+    // Left and Right Intercept Orientations
+    tfQuatToQuat(right_intercept.getRotation(), ROri_Intercept_right);
+    tfQuatToQuat(left_intercept.getRotation(), ROri_Intercept_left);
 
 }
 
@@ -183,6 +211,10 @@ void bimanual_ds_execution::getNextEEStates(tf::Pose &left_ee, tf::Pose &right_e
     left_ee.setOrigin(tf::Vector3(PosDesired_End_left[0],PosDesired_End_left[1],PosDesired_End_left[2]));
     right_ee.setOrigin(tf::Vector3(PosDesired_End_right[0],PosDesired_End_right[1],PosDesired_End_right[2]));
 
+    // Set Orientation to Intercept Orient with slerp
+    left_ee.setRotation(ROri_End_left.slerp(ROri_Intercept_left, slerp_t));
+    right_ee.setRotation(ROri_End_right.slerp(ROri_Intercept_right, slerp_t));
+
 }
 
 void bimanual_ds_execution::tfPosToVector(const tf::Vector3& pos, Vector& p){
@@ -205,3 +237,12 @@ void bimanual_ds_execution::tfQuatToVector(const tf::Quaternion& quat, Vector& q
     q_[3] =  quat.getZ();
     q.Set(q_,4);
 }
+
+void bimanual_ds_execution::tfQuatToQuat(const tf::Quaternion& quat, tf::Quaternion& q){
+
+    q.setX(quat.getX());
+    q.setY(quat.getY());
+    q.setZ(quat.getZ());
+    q.setW(quat.getW());
+}
+

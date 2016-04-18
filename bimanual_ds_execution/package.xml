@@ -21,12 +21,13 @@
   <build_depend>tf</build_depend>
   <build_depend>tf_conversions</build_depend>
   <build_depend>bimanual_ds</build_depend>
+  <build_depend>sgaussians</build_depend>
 
   <run_depend>mathlib</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>tf_conversions</run_depend>
   <run_depend>bimanual_ds</run_depend>
-
+  <run_depend>sgaussians</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

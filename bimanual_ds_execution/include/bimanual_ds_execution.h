@@ -24,6 +24,7 @@
 #include <tf/transform_datatypes.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include "CDDynamics.h"
 
 using namespace MathLib;
 
@@ -53,6 +54,8 @@ public:
     // Type Conversions
     void tfPosToVector(const tf::Vector3& pos, Vector& p);
     void tfQuatToVector(const tf::Quaternion& quat, Vector& q);
+    void tfQuatToQuat(const tf::Quaternion& quat, tf::Quaternion& q);
+    Eigen::Vector3f d2qw(Eigen::Vector4f  q,  Eigen::Vector4f  dq);
 
 private:
 
@@ -60,6 +63,7 @@ private:
 
     // (Robot) Left EE State Variables
     Vector 						RPos_End_left;            // Position of left ee in Right robot's RF
+    tf::Quaternion			    ROri_End_left;            // Orientation of left ee in right robot's RF
     Vector 						DRPos_End_left;           // Velocity of left ee
     Vector 						DDRPos_End_left;          // Acceleration of left ee
 
@@ -71,6 +75,7 @@ private:
 
     // (Robot) Right EE State Variables
     Vector 						RPos_End_right;           // Position of right ee in Right robot's RF
+    tf::Quaternion				ROri_End_right;           // Orientation of right ee in right robot's RF
     Vector 						DRPos_End_right;          // Velocity of right ee
     Vector 						DDRPos_End_right;         // Acceleration of right ee
 
@@ -82,7 +87,10 @@ private:
 
     // Virtual Object State Variables
     Vector						RPos_Intercept_left;      // Intercept position of left ee in right robot's RF
+    tf::Quaternion			    ROri_Intercept_left;      // Intercept orientation of left ee in right robot's RF
     Vector						RPos_Intercept_right;     // Intercept position of right ee in right robot's RF
+    tf::Quaternion				ROri_Intercept_right;     // Intercept orientation of right ee in right robot's RF
+
     Vector 						Position_VO;              // Position of Virtual Object
     Vector 						RPos_Intercept;           // Position of VO at intercept
     Vector						ROri_Intercept;           // Orientation of VO at intercept
@@ -93,10 +101,14 @@ private:
     Vector 						DDRPos_object;            // Acceleration of Real Object
     Vector						ROri_object;              // Orientation of Real Object in Right robot's RF
 
-    double dt;
-    double reachingThr;
-    double gTimeToReach;
+    // Orientation Dymamics
+    CDDynamics                  *angular_cddynamics;
+    Vector                      desired_ang_vel;
+    Vector                      filter_ang_vel;
 
+
+    double                      dt;
+    double                      slerp_t;
 
 };
 
