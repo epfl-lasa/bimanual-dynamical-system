@@ -34,7 +34,7 @@ public:
     bimanual_ds_execution();
     ~bimanual_ds_execution();
 
-    void init(double dt, double Gamma, double DGamma, double Gain_A, double Gain_K_l, double Gain_K_r);
+    void init(double dt, double Gamma, double DGamma, double Gain_A, double Gain_K_l, double Gain_K_r, double slerp_t_);
     void update();
 
     // EE functions

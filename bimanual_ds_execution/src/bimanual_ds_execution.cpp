@@ -79,7 +79,7 @@ bimanual_ds_execution::~bimanual_ds_execution()
 }
 
 
-void bimanual_ds_execution::init(double dt, double Gamma, double DGamma, double Gain_A, double Gain_K_l, double Gain_K_r){
+void bimanual_ds_execution::init(double dt, double Gamma, double DGamma, double Gain_A, double Gain_K_l, double Gain_K_r, double slerp_t_){
 
     vo_DS = new bimanual_ds();
     // Initialize ds motion parameters
@@ -97,6 +97,9 @@ void bimanual_ds_execution::init(double dt, double Gamma, double DGamma, double 
      angular_cddynamics = new CDDynamics(4,0.01,1);
      angular_cddynamics->SetState(filter_ang_vel);
      angular_cddynamics->SetDt(1.0/dt);
+
+     // Set slerp_t
+     slerp_t = slerp_t_;
 
 }
 
