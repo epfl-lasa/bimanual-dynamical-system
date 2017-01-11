@@ -16,4 +16,4 @@ http://www.roboticsproceedings.org/rss12/p19.html
   
   
 
-Note: For sack of simplicity of the repository and make the repo very easy to use for a wide variety of scenarios,  the general formulation of  LVP systems  (\Sum_{i=1}^{K} A_i(\theta)) is not included in this repository. Please contact Sina.Mirrazavi@epfl.ch for more information
+Note: For sack of simplicity of the repository and make the repo very easy to use for a wide variety of scenarios,  the general formulation of  LVP systems  (\Sum_{i=1}^{K} A_i(\theta)) is not included in this repository. Please contact Sina Mirrazavi for more information.
